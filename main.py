@@ -1,6 +1,10 @@
 import asyncio
 from crawl4ai import AsyncWebCrawler
 
+async def llm_structured_extraction():
+    
+    
+
 async def main():
     # Create an instance of AsyncWebCrawler
     async with AsyncWebCrawler() as crawler:
