@@ -1,6 +1,9 @@
 import asyncio
-from crawl4ai import AsyncWebCrawler, CrawlerRunConfig
+from crawl4ai import AsyncWebCrawler, CrawlerRunConfig, LLMConfig, JsonCssExtractionStrategy
 from crawl4ai.extraction_strategy import JsonXPathExtractionStrategy
+from dotenv import load_dotenv
+import os
+import json
 
 load_dotenv()
 
@@ -66,11 +69,21 @@ async def non_llm_extraction():
 </div></div></div>
     """
 
-    schema = JsonXPathExtractionStrategy.generate_schema(
+    schema = JsonCssExtractionStrategy.generate_schema(
         html = dummy_html,
-        llm_config=(
+        llm_config=LLMConfig(
             provider= "gpt-4.1 nano",
-            api_token= "key",
+            api_token= os.getenv("OPENAI_API_KEY")
         ),
-        query= "",
+        query= "From https://cdasiaonline.com/, I have shared a sample of one Law div with a title, date, to, subject, content, and annex. Please generate a schema for this law div.",
     )
+
+    print(f"Generated Schema:{json.dumps(schema,indent=2)}")
+
+    extraction_strategy = JsonCssExtractionStrategy(schema)
+
+    config = CrawlerRunConfig(extraction_strategy=extraction_strategy)
+
+
+    async with AsyncWebCrawler() as crawler:
+        results: List[CrawlResulT] 
